@@ -1,27 +1,44 @@
+#--------------------------------
+#flask and extension imports 
+#--------------------------------
 from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, LoginManager
+
+#import forms 
 from .forms import SignupForm, LoginForm
+
+#import models and database instance 
 from app.models import User, db
+
+#password hashing helpers 
 from werkzeug.security import generate_password_hash
 from werkzeug.security import check_password_hash
-
+# -------------------------------
+# Set up Blueprint and Login
+# -------------------------------
 auth = Blueprint('auth', __name__)
 login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
-
+# -------------------------------
+# User loader for Flask-Login
+# -------------------------------
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
 
+# -------------------------------
+# Signup Route
+# -------------------------------
 @auth.route('/signup', methods=['GET', 'POST'])
 def signup():
     form = SignupForm()
     if form.validate_on_submit():
+        # Check if username already exists
         existing = User.query.filter_by(username=form.username.data).first()
         if existing:
             flash("Username already exists.", "error")
             return redirect(url_for('auth.signup'))
-        
+        # Create new user and hash the password
         user = User(
             username=form.username.data,
             email=form.email.data,
@@ -34,6 +51,11 @@ def signup():
         return redirect(url_for('auth.login'))
     return render_template('signup.html', form=form)
 
+
+# -------------------------------
+# Login Route
+# -------------------------------
+
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -45,6 +67,10 @@ def login():
         flash("Invalid credentials", "error")
     return render_template('login.html', form=form)
 
+# -------------------------------
+# Dashboard Route
+# -------------------------------
+
 @auth.route('/dashboard')
 @login_required
 def dashboard():
@@ -52,7 +78,9 @@ def dashboard():
     if not account:
         return redirect(url_for('main.open_account'))
     return render_template('dashboard.html', account=account)
-
+# -------------------------------
+# Open Bank Account Route
+# -------------------------------
 @auth.route('/open_account', methods=['GET', 'POST'])
 @login_required
 def open_account():
@@ -72,6 +100,9 @@ def open_account():
 
     return render_template('open_account.html')
 
+# -------------------------------
+# Transfer Money Route
+# -------------------------------
 @auth.route('/transfer', methods=['GET', 'POST'])
 @login_required
 def transfer():
@@ -95,6 +126,9 @@ def transfer():
             return redirect(url_for('main.dashboard'))
     return render_template('transfer.html', form=form, balance=sender.balance)
 
+# -------------------------------
+# Transaction History Route
+# -------------------------------
 @auth.route('/transactions')
 @login_required
 def transactions():
@@ -104,6 +138,9 @@ def transactions():
     all_txns = sent.union(received).order_by(Transaction.timestamp.desc())
     return render_template('transactions.html', history=all_txns, acct=account)
 
+# -------------------------------
+# Admin Panel Route
+# -------------------------------
 @auth.route('/admin')
 @login_required
 def admin_panel():
@@ -114,6 +151,9 @@ def admin_panel():
     accounts = BankAccount.query.all()
     return render_template('admin_panel.html', users=users, logs=[])
 
+# -------------------------------
+# API: Get Balance Route
+# -------------------------------
 @auth.route('/api/balance')
 @login_required
 def api_balance():
@@ -125,7 +165,9 @@ def api_balance():
         "balance": account.balance,
         "email": current_user.email
     })
-
+# -------------------------------
+# Logout Route
+# -------------------------------
 @auth.route('/logout')
 @login_required
 def logout():

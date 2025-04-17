@@ -1,8 +1,15 @@
+
+# -----------------------------------------
+# Database Models for Flask Bank App
+# -----------------------------------------
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 from .extensions import db
 
+# ------------------------------
+#  User Model
+# ------------------------------
 class User(UserMixin, db.Model):
     id       = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
@@ -12,12 +19,18 @@ class User(UserMixin, db.Model):
 
     account = db.relationship('BankAccount', backref='user', uselist=False)
 
+# ------------------------------
+# BankAccount Model
+# ------------------------------
 class BankAccount(db.Model):
     id         = db.Column(db.Integer, primary_key=True)
     account_no = db.Column(db.String(12), unique=True, nullable=False)
     balance    = db.Column(db.Float, default=0)
     user_id    = db.Column(db.Integer, db.ForeignKey('user.id'))
 
+# ------------------------------
+#  Transaction Model
+# ------------------------------
 class Transaction(db.Model):
     id          = db.Column(db.Integer, primary_key=True)
     sender_id   = db.Column(db.Integer, db.ForeignKey('bank_account.id'))

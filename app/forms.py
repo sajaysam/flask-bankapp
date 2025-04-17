@@ -1,9 +1,20 @@
+
+# -----------------------------------------------------
+# Flask-WTF Forms for User Input and Validation
+# -----------------------------------------------------
+
+# FlaskForm is the base class for creating web forms in Flask
 from flask_wtf import FlaskForm
+# Form field types
 from wtforms import StringField, PasswordField, SubmitField
+# Built-in validators to ensure clean and safe user input
 from wtforms.validators import DataRequired, Email, EqualTo, Length
 from wtforms import DecimalField
 from wtforms.validators import NumberRange
 
+# ------------------------------
+# Signup Form
+# ------------------------------
 class SignupForm(FlaskForm):
     username = StringField(
         'Username',
@@ -24,6 +35,9 @@ class SignupForm(FlaskForm):
     submit = SubmitField('Sign Up')
 
 
+# ------------------------------
+# Login Form
+# ------------------------------
 class LoginForm(FlaskForm):
     username = StringField(
         'Username',
@@ -34,6 +48,11 @@ class LoginForm(FlaskForm):
         validators=[DataRequired()]
     )
     submit = SubmitField('Login')
+
+
+# ------------------------------
+# Money Transfer Form
+# ------------------------------
 
 class TransferForm(FlaskForm):
     to_account = StringField('Receiver Account #', validators=[DataRequired()])

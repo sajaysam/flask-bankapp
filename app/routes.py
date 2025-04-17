@@ -1,3 +1,6 @@
+# ----------------------------------------------------
+# Main Blueprint - Handles UI Routes and APIs
+# ----------------------------------------------------
 from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_required, current_user
 from .models import BankAccount, Transaction
@@ -6,8 +9,12 @@ import random
 import requests
 import os
 
+# Register blueprint as 'main'
 main = Blueprint('main', __name__)
 
+# -------------------------------------------
+#  Fetch Crypto Prices from WorldCoinIndex
+# -------------------------------------------
 def get_crypto_prices():
     try:
         api_key = os.getenv('WCI_API_KEY')
@@ -18,11 +25,17 @@ def get_crypto_prices():
     except:
         return [("BTC/USD", 30500), ("ETH/USD", 1900)]  # fallback
 
+# -------------------------------------------
+# Home Page
+# -------------------------------------------
 @main.route('/')
 def home():
     cryptos = get_crypto_prices()
     return render_template('home.html', cryptos=cryptos)
 
+# -------------------------------------------
+# Dashboard for Logged-in Users
+# -------------------------------------------
 @main.route('/dashboard')
 @login_required
 def dashboard():
@@ -31,6 +44,9 @@ def dashboard():
         return redirect(url_for('main.open_account'))
     return render_template('dashboard.html', account=account)
 
+# -------------------------------------------
+# Money Transfer Page
+# -------------------------------------------
 @main.route('/transfer', methods=['GET', 'POST'])
 @login_required
 def transfer():
@@ -45,8 +61,10 @@ def transfer():
         elif account.balance < form.amount.data:
             flash("Insufficient funds", 'error')
         else:
+             # Perform transfer
             account.balance -= float(form.amount.data)
             receiver.balance += float(form.amount.data)
+             # Record the transaction
             new_tx = Transaction(
                 sender_id=account.id,
                 receiver_id=receiver.id,
@@ -59,6 +77,9 @@ def transfer():
             return redirect(url_for('main.dashboard'))
     return render_template('transfer.html', form=form, balance=account.balance)
 
+# -------------------------------------------
+#  View Transaction History
+# -------------------------------------------
 @main.route('/transactions')
 @login_required
 def transactions():
@@ -89,16 +110,22 @@ def transactions():
 #
  #   return render_template('open_account.html')
 
+# -------------------------------------------
+# 🛡 Admin Panel - Requires Admin Access
+# -------------------------------------------
 @main.route('/admin')
 @login_required
 def admin_panel():
     if not current_user.is_admin:
         flash("Access denied", "error")
         return redirect(url_for('main.home'))
-
+      # Currently showing bank account users, not full user list
     users = BankAccount.query.all()
     return render_template('admin_panel.html', users=users)
 
+# -------------------------------------------
+# 📡 JSON API: Get Current Account Balance
+# -------------------------------------------
 @main.route('/api/balance')
 @login_required
 def api_balance():
