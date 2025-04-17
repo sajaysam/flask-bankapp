@@ -1,0 +1,35 @@
+{% extends 'home.html' %}
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white text-black p-6 rounded shadow mt-10">
+  <h2 class="text-2xl font-bold mb-4">Admin Panel</h2>
+
+  <h3 class="text-xl font-semibold mb-2">User Accounts</h3>
+  <table class="w-full border">
+    <thead>
+      <tr class="bg-gray-100">
+        <th class="p-2 text-left">Username</th>
+        <th class="p-2 text-left">Account #</th>
+        <th class="p-2 text-left">Balance</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for uid, acc in users %}
+        <tr class="border-t">
+          <td class="p-2">{{ acc.user_id }}</td>
+          <td class="p-2">{{ acc.account_no }}</td>
+          <td class="p-2">${{ '%.2f'|format(acc.balance) }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h3 class="text-xl font-semibold mt-6 mb-2">Logs</h3>
+  <ul class="list-disc list-inside text-sm">
+    {% for log in logs %}
+      <li>{{ log }}</li>
+    {% else %}
+      <li>No logs yet.</li>
+    {% endfor %}
+  </ul>
+</div>
+{% endblock %}

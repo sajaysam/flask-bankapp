@@ -1,0 +1,13 @@
+{% extends 'home.html' %}
+{% block content %}
+<div class="max-w-lg mx-auto bg-white text-black p-6 rounded shadow mt-10">
+  <h2 class="text-2xl font-bold mb-4">Transfer Funds</h2>
+  <p class="text-sm text-gray-600 mb-4">Balance: ${{ '%.2f'|format(balance) }}</p>
+  <form method="POST">
+    {{ form.hidden_tag() }}
+    <div class="mb-4">{{ form.to_account.label }} {{ form.to_account(class_='w-full px-3 py-2 border rounded') }}</div>
+    <div class="mb-4">{{ form.amount.label }} {{ form.amount(class_='w-full px-3 py-2 border rounded') }}</div>
+    <button class="bg-blue-700 text-white px-4 py-2 rounded">{{ form.submit.label }}</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,7 @@
+{% for user in users %}
+<tr>
+  <td>{{ user.username }}</td>
+  <td>{{ user.account.account_no if user.account else 'None' }}</td>
+  <td>${{ '%.2f'|format(user.account.balance) if user.account else 0 }}</td>
+</tr>
+{% endfor %}
