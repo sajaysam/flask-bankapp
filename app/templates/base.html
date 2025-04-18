@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{% block title %}FINOVA BANK{% endblock %}</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @keyframes marquee {
+      0% { transform: translateX(100%) }
+      100% { transform: translateX(-100%) }
+    }
+    .animate-marquee {
+      display: inline-block;
+      animation: marquee 20s linear infinite;
+    }
+  </style>
+</head>
+<body class="bg-gradient-to-r from-sky-500 to-indigo-500 text-white min-h-screen flex flex-col">
+
+  <!-- 🌐 Crypto Ticker Block -->
+  {% block ticker %}
+  {% if cryptos %}
+  <div class="w-full bg-gray-900 text-white overflow-hidden whitespace-nowrap">
+    <div class="animate-marquee inline-block py-2 px-4">
+      {% for label, price in cryptos %}
+        <span class="mx-6 text-sm font-semibold">
+          {{ label }}: ${{ "%.2f"|format(price) }}
+        </span>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+  {% endblock %}
+
+  <!-- Page Content -->
+  <main class="flex-grow flex items-center justify-center p-6">
+    {% block content %}{% endblock %}
+  </main>
+
+  <!--Footer -->
+  <footer class="text-center text-sm opacity-80 mb-4">
+    Your Own Banking Partner &copy; {{ current_year or 2025 }}
+  </footer>
+
+</body>
+</html>

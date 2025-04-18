@@ -1,45 +1,44 @@
-import os
-from dotenv import load_dotenv
-# Load environment variables from .env file
-load_dotenv()
+# app/__init__.py
 
+import os
 from flask import Flask
-from flask_login import LoginManager
+from dotenv import load_dotenv
+
 from .extensions import db, migrate, login_manager
 
 def create_app():
+    # Load environment variables from .env
+    load_dotenv()
 
-    # Creating a Flask app instance
+    # Initialize the Flask app
     app = Flask(__name__)
-    #----------------------------------
-    # Load configuration
-    #----------------------------------
-    # Secret key for session management and CSRF protection
+
+    # ---------------------------
+    # Configuration
+    # ---------------------------
     app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'devkey')
-    # Database URL (PostgreSQL from .env, or fallback to local SQLite)
-    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'postgresql:///bankapp.db')
-    # Turns off modification tracking (saves memory)
+    app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL', 'sqlite:///bankapp.db')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    #---------------------------
-    # Initialize extensions
-    #---------------------------
+
+    # ---------------------------
+    # Initialize Extensions
+    # ---------------------------
     db.init_app(app)
     migrate.init_app(app, db)
     login_manager.init_app(app)
 
-    # Set login view (optional but recommended)
-    login_manager.login_view = 'auth.login'
+    # ---------------------------
+    # Register Blueprints
+    # ---------------------------
+    from .routes import main as main_blueprint
+    from .auth import auth as auth_blueprint
 
-    # Import and register blueprints
-    from .routes import main
-    from .auth import auth  # or auth_bp depending on what your auth.py defines
+    app.register_blueprint(main_blueprint)
+    app.register_blueprint(auth_blueprint)
 
-    app.register_blueprint(main)
-    app.register_blueprint(auth)
-
-    #--------------------------
-    # Import models for migrations
-    #---------------------------
+    # ---------------------------
+    # User Loader for Flask-Login
+    # ---------------------------
     from .models import User
 
     @login_manager.user_loader

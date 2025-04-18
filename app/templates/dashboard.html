@@ -1,4 +1,5 @@
-{% extends 'home.html' %}
+{% extends 'base.html' %}
+
 {% block content %}
 <div class="max-w-lg mx-auto bg-white text-black p-6 rounded shadow mt-10">
   <h2 class="text-2xl font-bold mb-4">Your Account</h2>
@@ -7,8 +8,8 @@
   <p><strong>Email:</strong> {{ current_user.email }}</p>
 
   <div class="mt-6">
-    <a href="/transfer" class="bg-blue-600 text-white px-4 py-2 rounded">Transfer</a>
-    <a href="/transactions" class="ml-4 bg-gray-700 text-white px-4 py-2 rounded">Transaction History</a>
+    <a href="{{ url_for('auth.transfer') }}" class="bg-blue-600 text-white px-4 py-2 rounded">Transfer</a>
+    <a href="{{ url_for('auth.transactions') }}" class="ml-4 bg-gray-700 text-white px-4 py-2 rounded">Transaction History</a>
   </div>
 </div>
 {% endblock %}

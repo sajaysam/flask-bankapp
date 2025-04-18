@@ -1,30 +1,14 @@
-#--------------------------------
-#flask and extension imports 
-#--------------------------------
-from flask import Blueprint, render_template, redirect, url_for, flash, request
-from flask_login import login_user, logout_user, login_required, LoginManager
+# app/auth.py
 
-#import forms 
-from .forms import SignupForm, LoginForm
+from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
+from flask_login import login_user, logout_user, login_required, current_user
+from werkzeug.security import generate_password_hash, check_password_hash
+from .models import User, BankAccount, Transaction
+from .forms import SignupForm, LoginForm, TransferForm
+from .extensions import db
+import random
 
-#import models and database instance 
-from app.models import User, db
-
-#password hashing helpers 
-from werkzeug.security import generate_password_hash
-from werkzeug.security import check_password_hash
-# -------------------------------
-# Set up Blueprint and Login
-# -------------------------------
 auth = Blueprint('auth', __name__)
-login_manager = LoginManager()
-login_manager.login_view = 'auth.login'
-# -------------------------------
-# User loader for Flask-Login
-# -------------------------------
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
 
 # -------------------------------
 # Signup Route
@@ -33,17 +17,14 @@ def load_user(user_id):
 def signup():
     form = SignupForm()
     if form.validate_on_submit():
-        # Check if username already exists
-        existing = User.query.filter_by(username=form.username.data).first()
-        if existing:
+        if User.query.filter_by(username=form.username.data).first():
             flash("Username already exists.", "error")
             return redirect(url_for('auth.signup'))
-        # Create new user and hash the password
         user = User(
             username=form.username.data,
             email=form.email.data,
             password=generate_password_hash(form.password.data),
-            is_admin=form.username.data == "admin"
+            is_admin=(form.username.data == "admin")
         )
         db.session.add(user)
         db.session.commit()
@@ -51,11 +32,9 @@ def signup():
         return redirect(url_for('auth.login'))
     return render_template('signup.html', form=form)
 
-
 # -------------------------------
 # Login Route
 # -------------------------------
-
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -63,45 +42,50 @@ def login():
         user = User.query.filter_by(username=form.username.data).first()
         if user and check_password_hash(user.password, form.password.data):
             login_user(user)
-            return redirect(url_for('main.dashboard'))
+            return redirect(url_for('auth.dashboard'))
         flash("Invalid credentials", "error")
     return render_template('login.html', form=form)
 
 # -------------------------------
-# Dashboard Route
+# Logout Route
 # -------------------------------
+@auth.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('main.home'))
 
+# -------------------------------
+# Dashboard
+# -------------------------------
 @auth.route('/dashboard')
 @login_required
 def dashboard():
     account = BankAccount.query.filter_by(user_id=current_user.id).first()
     if not account:
-        return redirect(url_for('main.open_account'))
+        return redirect(url_for('auth.open_account'))
     return render_template('dashboard.html', account=account)
+
 # -------------------------------
-# Open Bank Account Route
+# Open Bank Account
 # -------------------------------
 @auth.route('/open_account', methods=['GET', 'POST'])
 @login_required
 def open_account():
-    existing = BankAccount.query.filter_by(user_id=current_user.id).first()
-    if existing:
+    if BankAccount.query.filter_by(user_id=current_user.id).first():
         flash("You already have an account.", "info")
-        return redirect(url_for('auth.dashboard'))  # use correct blueprint name
-
+        return redirect(url_for('auth.dashboard'))
     if request.method == 'POST':
-        import random
         acct_no = str(random.randint(10**11, 10**12 - 1))
         account = BankAccount(account_no=acct_no, balance=0.0, user_id=current_user.id)
         db.session.add(account)
         db.session.commit()
         flash("Account created!", "success")
         return redirect(url_for('auth.dashboard'))
-
     return render_template('open_account.html')
 
 # -------------------------------
-# Transfer Money Route
+# Transfer Money
 # -------------------------------
 @auth.route('/transfer', methods=['GET', 'POST'])
 @login_required
@@ -123,11 +107,11 @@ def transfer():
             db.session.add(txn)
             db.session.commit()
             flash("Transfer successful", "success")
-            return redirect(url_for('main.dashboard'))
+            return redirect(url_for('auth.dashboard'))
     return render_template('transfer.html', form=form, balance=sender.balance)
 
 # -------------------------------
-# Transaction History Route
+# Transaction History
 # -------------------------------
 @auth.route('/transactions')
 @login_required
@@ -139,7 +123,7 @@ def transactions():
     return render_template('transactions.html', history=all_txns, acct=account)
 
 # -------------------------------
-# Admin Panel Route
+# Admin Panel
 # -------------------------------
 @auth.route('/admin')
 @login_required
@@ -152,7 +136,7 @@ def admin_panel():
     return render_template('admin_panel.html', users=users, logs=[])
 
 # -------------------------------
-# API: Get Balance Route
+# API: Balance
 # -------------------------------
 @auth.route('/api/balance')
 @login_required
@@ -165,11 +149,3 @@ def api_balance():
         "balance": account.balance,
         "email": current_user.email
     })
-# -------------------------------
-# Logout Route
-# -------------------------------
-@auth.route('/logout')
-@login_required
-def logout():
-    logout_user()
-    return redirect(url_for('main.home'))
