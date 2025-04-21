@@ -1,5 +1,6 @@
 import pytest
 from run import app
+from app import app
 from app.extensions import db
 
 @pytest.fixture
