@@ -57,4 +57,4 @@ class LoginForm(FlaskForm):
 class TransferForm(FlaskForm):
     to_account = StringField('Receiver Account #', validators=[DataRequired()])
     amount = DecimalField('Amount', validators=[DataRequired(), NumberRange(min=0.01)])
-    submit = SubmitField('Send'
+    submit = SubmitField('Send')
