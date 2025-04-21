@@ -1,6 +1,6 @@
 # 🏦 FINOVA Flask Banking App
 
-This is a full-featured Flask web application simulating an online banking system. Users can register, log in, open accounts, transfer money, view transaction history, and get real-time cryptocurrency rates via API. The backend is powered by Flask and PostgreSQL (via AWS RDS), with full test coverage and cloud deployment support.
+This is a full-featured Flask web application simulating an online banking system. Users can register, log in, open accounts, transfer money, view transaction history, and get real-time cryptocurrency rates via API. The backend is powered by Flask and PostgreSQL (via AWS RDS), with full test coverage.
 
 ---
 
@@ -14,7 +14,6 @@ This is a full-featured Flask web application simulating an online banking syste
 - 🧾 Balance API (JSON) for integrations
 - ☁️ AWS RDS PostgreSQL Integration
 - 📈 Unit Testing for all major modules
-- 🚀 Deployed on [Render.com](https://render.com)
 
 ---
 
