@@ -25,7 +25,7 @@ def get_crypto_prices():
 # -------------------------------------------
 # Displays welcome and crypto ticker 
 # -------------------------------------------
-@main.route('')
+@main.route('/')
 def home():
     cryptos = get_crypto_prices()
     return render_template('home.html', cryptos=cryptos)
