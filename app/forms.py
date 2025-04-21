@@ -1,6 +1,6 @@
 
 # -----------------------------------------------------
-# Flask-WTF Forms for User Input and Validation
+# Flask-WTF Forms for User Input and Validation, this shows the definitions for user input
 # -----------------------------------------------------
 
 # FlaskForm is the base class for creating web forms in Flask
@@ -13,7 +13,7 @@ from wtforms import DecimalField
 from wtforms.validators import NumberRange
 
 # ------------------------------
-# Signup Form
+# Signup Form - fields for registration
 # ------------------------------
 class SignupForm(FlaskForm):
     username = StringField(
@@ -36,7 +36,7 @@ class SignupForm(FlaskForm):
 
 
 # ------------------------------
-# Login Form
+# Login Form - login form authenticates the users 
 # ------------------------------
 class LoginForm(FlaskForm):
     username = StringField(
@@ -51,7 +51,7 @@ class LoginForm(FlaskForm):
 
 
 # ------------------------------
-# Money Transfer Form
+# Money Transfer Form - money transfer form is for sending money from one existing user to another. 
 # ------------------------------
 
 class TransferForm(FlaskForm):
