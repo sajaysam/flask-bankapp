@@ -1,57 +1,27 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>FINOVA BANK</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    @keyframes marquee {
-      0% { transform: translateX(100%) }
-      100% { transform: translateX(-100%) }
-    }
-    .animate-marquee {
-      display: inline-block;
-      animation: marquee 20s linear infinite;
-    }
-  </style>
-</head>
-<body class="bg-gradient-to-r from-sky-500 to-indigo-500 text-white min-h-screen flex flex-col justify-center items-center">
-
-  <!-- Crypto Ticker -->
-  {% if cryptos %}
-  <div class="w-full bg-gray-900 text-white overflow-hidden whitespace-nowrap">
-    <div class="animate-marquee inline-block py-2 px-4">
-      {% for label, price in cryptos %}
-        <span class="mx-6 text-sm font-semibold">
-          {{ label }}: ${{ "%.2f"|format(price) }}
-        </span>
-      {% endfor %}
-    </div>
-  </div>
-  {% endif %}
-
-  <!-- Welcome Heading -->
-  {% extends 'base.html' %}
+{% extends 'base.html' %}
 
 {% block content %}
-  <h1 class="text-4xl font-bold mb-6">Welcome to FINOVA BANK</h1>
-  <div class="flex gap-6">
-    <a href="{{ url_for('auth.signup') }}" class="bg-white text-blue-700 px-6 py-3 rounded-lg font-semibold shadow-lg hover:bg-gray-100">Sign Up</a>
-    <a href="{{ url_for('auth.login') }}" class="bg-blue-900 text-white px-6 py-3 rounded-lg font-semibold shadow-lg hover:bg-blue-800">Login</a>
-  </div>
-{% endblock %}
+<div class="text-center px-6 py-16">
+  <h1 class="text-5xl md:text-6xl font-extrabold leading-tight mb-4 drop-shadow-lg">
+    Welcome to <span class="text-yellow-300">FINOVA BANK</span>
+  </h1>
+  <p class="text-lg md:text-xl text-white/90 mb-8 font-medium">
+    Secure, Smart, Seamless Banking for Everyone.
+  </p>
 
-  <!-- Open Account Link -->
-  <div class="mt-8">
-    <a href="{{ url_for('auth.open_account') }}" class="bg-green-600 hover:bg-green-700 transition px-5 py-2 rounded shadow text-white font-semibold">
+  <div class="flex justify-center flex-wrap gap-4">
+    <a href="{{ url_for('auth.signup') }}"
+       class="bg-white text-blue-700 px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-gray-100 transition">
+      Sign Up
+    </a>
+    <a href="{{ url_for('auth.login') }}"
+       class="bg-blue-800 text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-blue-900 transition">
+      Login
+    </a>
+    <a href="{{ url_for('auth.open_account') }}"
+       class="bg-green-600 text-white px-6 py-3 rounded-lg font-semibold shadow-md hover:bg-green-700 transition">
       Open a Bank Account
     </a>
   </div>
-
-  <!-- Footer -->
-  <footer class="mt-12 text-sm opacity-80">Your Own Banking Partner</footer>
-
-</body>
-</html>
+</div>
+{% endblock %}

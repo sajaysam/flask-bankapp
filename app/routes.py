@@ -20,7 +20,7 @@ def get_crypto_prices():
         data = res.json().get("Markets", [])
         return [(item["Label"], item["Price"]) for item in data]
     except:
-        return [("BTC/USD", 30500), ("ETH/USD", 1900)]
+        return [("BTC/USD", 85366), ("ETH/USD", 1600)]
 
 # -------------------------------------------
 # Home Page

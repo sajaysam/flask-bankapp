@@ -4,7 +4,6 @@
   <meta charset="UTF-8">
   <title>{% block title %}FINOVA BANK{% endblock %}</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     @keyframes marquee {
@@ -18,14 +17,68 @@
   </style>
 </head>
 <body class="bg-gradient-to-r from-sky-500 to-indigo-500 text-white min-h-screen flex flex-col">
+<!--start -->
+  <body class="bg-cover bg-center text-white min-h-screen flex flex-col"
+      style="background-image: url('{{ url_for('static', filename='images/bank-bg.jpg') }}');">
+<!--stop-->
+  <!-- 🌐 Responsive Navigation Bar -->
+  <header class="w-full bg-gray-900 text-white shadow-md">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="flex justify-between h-16 items-center">
+        <!-- Logo -->
+        <a href="{{ url_for('main.home') }}" class="text-xl font-bold text-yellow-400 tracking-wide">
+          FINOVA BANK
+        </a>
 
-  <!-- 🌐 Crypto Ticker Block -->
+        <!-- Desktop Links -->
+        <nav class="hidden md:flex gap-6 text-sm font-semibold">
+          {% if current_user.is_authenticated %}
+            <a href="{{ url_for('auth.dashboard') }}" class="hover:text-yellow-300">Dashboard</a>
+            <a href="{{ url_for('auth.transfer') }}" class="hover:text-yellow-300">Transfer</a>
+            <a href="{{ url_for('auth.transactions') }}" class="hover:text-yellow-300">Transactions</a>
+            <a href="{{ url_for('auth.logout') }}" class="hover:text-yellow-300">Logout</a>
+          {% else %}
+            <a href="{{ url_for('auth.signup') }}" class="hover:text-yellow-300">Sign Up</a>
+            <a href="{{ url_for('auth.login') }}" class="hover:text-yellow-300">Login</a>
+            <a href="{{ url_for('auth.open_account') }}" class="hover:text-yellow-300">Open Account</a>
+          {% endif %}
+        </nav>
+
+        <!-- Mobile Toggle -->
+        <div class="md:hidden">
+          <button id="menuToggle" class="focus:outline-none">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2"
+                 viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M4 6h16M4 12h16M4 18h16"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Links -->
+      <div id="mobileMenu" class="md:hidden hidden flex-col gap-4 py-4 text-sm font-medium">
+        {% if current_user.is_authenticated %}
+          <a href="{{ url_for('auth.dashboard') }}" class="block py-2">Dashboard</a>
+          <a href="{{ url_for('auth.transfer') }}" class="block py-2">Transfer</a>
+          <a href="{{ url_for('auth.transactions') }}" class="block py-2">Transactions</a>
+          <a href="{{ url_for('auth.logout') }}" class="block py-2">Logout</a>
+        {% else %}
+          <a href="{{ url_for('auth.signup') }}" class="block py-2">Sign Up</a>
+          <a href="{{ url_for('auth.login') }}" class="block py-2">Login</a>
+          <a href="{{ url_for('auth.open_account') }}" class="block py-2">Open Account</a>
+        {% endif %}
+      </div>
+    </div>
+  </header>
+
+  <!-- 📈 Crypto Ticker -->
   {% block ticker %}
   {% if cryptos %}
-  <div class="w-full bg-gray-900 text-white overflow-hidden whitespace-nowrap">
-    <div class="animate-marquee inline-block py-2 px-4">
+  <div class="w-full bg-gray-800 text-white overflow-hidden whitespace-nowrap text-sm">
+    <div class="animate-marquee py-2 px-4">
       {% for label, price in cryptos %}
-        <span class="mx-6 text-sm font-semibold">
+        <span class="mx-6 font-semibold">
           {{ label }}: ${{ "%.2f"|format(price) }}
         </span>
       {% endfor %}
@@ -34,15 +87,27 @@
   {% endif %}
   {% endblock %}
 
-  <!-- Page Content -->
+  <!-- 🧩 Main Content -->
   <main class="flex-grow flex items-center justify-center p-6">
     {% block content %}{% endblock %}
   </main>
 
-  <!--Footer -->
+  <!-- 👣 Footer -->
   <footer class="text-center text-sm opacity-80 mb-4">
-    Your Own Banking Partner &copy; {{ current_year or 2025 }}
+    Your Trusted Banking Partner &copy; {{ current_year or 2025 }}
   </footer>
+
+  <!-- 📱 Mobile Nav Toggle Script -->
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const menuToggle = document.getElementById("menuToggle");
+      const mobileMenu = document.getElementById("mobileMenu");
+
+      menuToggle.addEventListener("click", () => {
+        mobileMenu.classList.toggle("hidden");
+      });
+    });
+  </script>
 
 </body>
 </html>

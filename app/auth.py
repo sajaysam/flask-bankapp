@@ -77,7 +77,7 @@ def open_account():
         return redirect(url_for('auth.dashboard'))
     if request.method == 'POST':
         acct_no = str(random.randint(10**11, 10**12 - 1))
-        account = BankAccount(account_no=acct_no, balance=0.0, user_id=current_user.id)
+        account = BankAccount(account_no=acct_no, balance=10000.0, user_id=current_user.id)
         db.session.add(account)
         db.session.commit()
         flash("Account created!", "success")
@@ -120,7 +120,10 @@ def transactions():
     sent = Transaction.query.filter_by(sender_id=account.id)
     received = Transaction.query.filter_by(receiver_id=account.id)
     all_txns = sent.union(received).order_by(Transaction.timestamp.desc())
-    return render_template('transactions.html', history=all_txns, acct=account)
+    # Build a lookup dictionary for all bank accounts
+    accounts = {acc.id: acc for acc in BankAccount.query.all()}
+
+    return render_template('transactions.html', history=all_txns, acct=account, accounts=accounts, user_id=current_user.id)
 
 # -------------------------------
 # Admin Panel
