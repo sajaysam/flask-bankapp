@@ -1,5 +1,7 @@
 # app/auth.py
-
+#-----------------------
+# Authentication and user account management
+#-----------------------
 from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -11,7 +13,7 @@ import random
 auth = Blueprint('auth', __name__)
 
 # -------------------------------
-# Signup Route
+# Signup Route - for registering a new user 
 # -------------------------------
 @auth.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -33,7 +35,7 @@ def signup():
     return render_template('signup.html', form=form)
 
 # -------------------------------
-# Login Route
+# Login Route - authenticates an existing user in the database
 # -------------------------------
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
@@ -47,7 +49,7 @@ def login():
     return render_template('login.html', form=form)
 
 # -------------------------------
-# Logout Route
+# Logout Route - to end the session and go back to home page
 # -------------------------------
 @auth.route('/logout')
 @login_required
@@ -56,7 +58,7 @@ def logout():
     return redirect(url_for('main.home'))
 
 # -------------------------------
-# Dashboard
+# Dashboard - for displaying user account info
 # -------------------------------
 @auth.route('/dashboard')
 @login_required
@@ -67,7 +69,7 @@ def dashboard():
     return render_template('dashboard.html', account=account)
 
 # -------------------------------
-# Open Bank Account
+# Open Bank Account - creating a new bank account
 # -------------------------------
 @auth.route('/open_account', methods=['GET', 'POST'])
 @login_required
@@ -85,7 +87,7 @@ def open_account():
     return render_template('open_account.html')
 
 # -------------------------------
-# Transfer Money
+# Transfer Money - supporting the transfer for funds between two users 
 # -------------------------------
 @auth.route('/transfer', methods=['GET', 'POST'])
 @login_required
@@ -111,7 +113,7 @@ def transfer():
     return render_template('transfer.html', form=form, balance=sender.balance)
 
 # -------------------------------
-# Transaction History
+# Transaction History - Displays the users transactions 
 # -------------------------------
 @auth.route('/transactions')
 @login_required
