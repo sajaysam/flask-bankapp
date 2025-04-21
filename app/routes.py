@@ -35,6 +35,11 @@ def home():
 # -------------------------------------------
 @main.route('/dashboard')
 @login_required
+def dashboard():
+    account = BankAccount.query.filter_by(user_id=current_user.id).first()
+    if not account:
+        return redirect(url_for('auth.open_account'))
+    return render_template('dashboard.html', account=account)
 
 # -------------------------------------------
 # Admin Panel - lists all the bank account user - admin function
