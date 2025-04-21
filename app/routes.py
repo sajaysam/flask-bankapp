@@ -1,5 +1,5 @@
 # ----------------------------------------------------
-# Main Blueprint - Handles UI Routes and General Pages
+# Main imports and Routes - Displayed the Homepage, Admin Panel and Public API's. 
 # ----------------------------------------------------
 from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_required, current_user
@@ -10,7 +10,7 @@ import requests
 main = Blueprint('main', __name__)
 
 # -------------------------------------------
-# Fetch Crypto Prices from WorldCoinIndex
+# Fetch Crypto Prices from WorldCoinIndex using an external API
 # -------------------------------------------
 def get_crypto_prices():
     try:
@@ -23,7 +23,7 @@ def get_crypto_prices():
         return [("BTC/USD", 85366), ("ETH/USD", 1600)]
 
 # -------------------------------------------
-# Home Page
+# Displays welcome and crypto ticker 
 # -------------------------------------------
 @main.route('/')
 def home():
@@ -42,7 +42,7 @@ def dashboard():
     return render_template('dashboard.html', account=account)
 
 # -------------------------------------------
-# Admin Panel
+# Admin Panel - lists all the bank account user - admin function
 # -------------------------------------------
 @main.route('/admin')
 @login_required
@@ -54,7 +54,7 @@ def admin_panel():
     return render_template('admin_panel.html', users=users)
 
 # -------------------------------------------
-# API: Get Balance
+# API: Get the account balance (Created in JSON)
 # -------------------------------------------
 @main.route('/api/balance')
 @login_required
