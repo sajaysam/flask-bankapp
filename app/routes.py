@@ -14,7 +14,7 @@ main = Blueprint('main', __name__)
 # -------------------------------------------
 def get_crypto_prices():
     try:
-        api_key = os.getenv('WCI_API_KEYs')
+        api_key = os.getenv('WCI_API_KEY')
         url = f"https://www.worldcoinindex.com/apiservice/json?key={api_key}&fiat=USD&label=btcusd-ethusd"
         res = requests.get(url)
         data = res.json().get("Markets", [])
