@@ -26,7 +26,7 @@ class SignupForm(FlaskForm):
     )
     password = PasswordField(
         'Password',
-        validators=[DataRequired(), Length(min=)]
+        validators=[DataRequired(), Length(min=6)]
     )
     confirm = PasswordField(
         'Confirm Password',
