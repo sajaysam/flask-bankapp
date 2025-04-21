@@ -1,12 +1,14 @@
 # app/models.py
-
+#----------------------
+# For the creation of the database models 
+#----------------------
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 from .extensions import db
 
 # ------------------------------
-# User Model
+# User Models - stores login and profile data
 # ------------------------------
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
@@ -19,7 +21,7 @@ class User(UserMixin, db.Model):
     account = db.relationship('BankAccount', backref='user', uselist=False)
 
 # ------------------------------
-# BankAccount Model
+# BankAccount Model - created to hold the account number and balance info 
 # ------------------------------
 class BankAccount(db.Model):
     __tablename__ = 'bank_accounts'
@@ -29,7 +31,7 @@ class BankAccount(db.Model):
     user_id    = db.Column(db.Integer, db.ForeignKey('users.id'))
 
 # ------------------------------
-# Transaction Model
+# Transaction Model - stores the fund transfer info
 # ------------------------------
 class Transaction(db.Model):
     __tablename__ = 'transactions'
