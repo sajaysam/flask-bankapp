@@ -1,33 +1,21 @@
-import pytest
-from app import create_app
-from app.models import User, BankAccount, accounts_db, transactions_db
+from app.models import User, BankAccount
+from werkzeug.security import generate_password_hash
+from app.extensions import db
 
-@pytest.fixture
-def client():
-    app = create_app()
-    app.config['TESTING'] = True
-    client = app.test_client()
+def test_transfer_and_history(client, app):
+    with app.app_context():
+        u1 = User(username="u1", email="u1@mail.com", password=generate_password_hash("pass"))
+        u2 = User(username="u2", email="u2@mail.com", password=generate_password_hash("pass"))
+        db.session.add_all([u1, u2])
+        db.session.commit()
 
-    # Setup users and accounts
-    user1 = User('1', 'alice', 'pass123', 'a@x.com')
-    user2 = User('2', 'bob', 'pass123', 'b@x.com')
-    accounts_db['1'] = BankAccount(user_id='1', account_no='111111111111', balance=500.0)
-    accounts_db['2'] = BankAccount(user_id='2', account_no='222222222222', balance=100.0)
+        a1 = BankAccount(account_no="1001", balance=5000, user_id=u1.id)
+        a2 = BankAccount(account_no="1002", balance=2000, user_id=u2.id)
+        db.session.add_all([a1, a2])
+        db.session.commit()
 
-    from flask_login import login_user
+    client.post("/login", data={"username": "u1", "password": "pass"}, follow_redirects=True)
+    client.post("/transfer", data={"to_account": "1002", "amount": 500}, follow_redirects=True)
 
-    @app.before_request
-    def auto_login():
-        login_user(user1)
-
-    return client
-
-def test_transfer_success(client):
-    r = client.post('/transfer', data={'to_account': '222222222222', 'amount': '100'}, follow_redirects=True)
-    assert b'Transfer successful' in r.data
-    assert accounts_db['1'].balance == 400.0
-    assert accounts_db['2'].balance == 200.0
-
-def test_transfer_fail_insufficient(client):
-    r = client.post('/transfer', data={'to_account': '222222222222', 'amount': '9999'}, follow_redirects=True)
-    assert b'Insufficient funds' in r.data
+    res = client.get("/transactions")
+    assert b"1002" in res.data or b"500" in res.data

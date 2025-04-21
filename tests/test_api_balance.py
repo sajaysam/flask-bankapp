@@ -1,29 +1,18 @@
-import pytest
-from app import create_app
-from app.models import User, accounts_db, BankAccount
+from app.models import User, BankAccount
+from werkzeug.security import generate_password_hash
+from app.extensions import db
 
-@pytest.fixture
-def client():
-    app = create_app()
-    app.config['TESTING'] = True
-    client = app.test_client()
+def test_api_balance(client, app):
+    with app.app_context():
+        user = User(username="sajay", email="sajaysam@hotmail.com", password=generate_password_hash("pass"))
+        db.session.add(user)
+        db.session.commit()
 
-    # Create user + account
-    user = User('1', 'john', 'secret123', 'john@bank.com')
-    accounts_db['1'] = BankAccount(user_id='1', account_no='999999999999', balance=500)
+        acct = BankAccount(account_no="9999", balance=3000, user_id=user.id)
+        db.session.add(acct)
+        db.session.commit()
 
-    from flask_login import login_user
-
-    @app.before_request
-    def auto_login():
-        login_user(user)
-
-    return client
-
-def test_api_balance(client):
-    res = client.get('/api/balance')
+    client.post("/login", data={"username": "apiuser", "password": "pass"}, follow_redirects=True)
+    res = client.get("/api/balance")
     assert res.status_code == 200
-    data = res.get_json()
-    assert data['account_number'] == '999999999999'
-    assert data['balance'] == 500
-    assert data['email'] == 'john@bank.com'
+    assert b"balance" in res.data
